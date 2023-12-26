@@ -1,0 +1,11 @@
+projects/*/build/
+build/
+projects/*/.cache/
+compile_commands.json
+
+# 所有.开头的文件夹
+.*/
+
+# VSCode
+!.vscode/
+!.vscode/*
