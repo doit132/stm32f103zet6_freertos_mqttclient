@@ -4,7 +4,7 @@ g_project_name = "STM32F103_Pro"
 -- 这里只所以再用 project 等于 project_name, 而不是直接使用 project_name, 是因为会报 error: attempt to concatenate a nil value (global 'project_name') 错误
 local project_name = g_project_name
 local target_dir = "build"
-local ldscript_file_path = "User/src/STM32F103XE_FLASH.ld"
+local ldscript_file_path = "STM32F103ZETx_FLASH.ld"
 local sdk_folder_path = "C:/Users/doit132/scoop/apps/gcc-arm-none-eabi/current"
 local bin_folder_path = sdk_folder_path.."/bin"
 local cross_compiler_prefix = "arm-none-eabi"
@@ -35,11 +35,16 @@ toolchain(cross_compiler_prefix)
     -- set_toolset("ld", "arm-none-linux-gnueabihf-ld")
 toolchain_end()
 
-includes("Drivers/BSP/xmake.lua")
--- includes("Drivers/CMSIS/xmake.lua")
--- includes("Drivers/STM32MP1xx_HAL_Driver/xmake.lua")
--- includes("Drivers/SYSTEM/xmake.lua")
-includes("User/xmake.lua")
+includes("Middlewares/xmake.lua")
+includes("Drivers/xmake.lua")
+includes("Core/xmake.lua")
+
+target(g_project_name)
+    add_files(
+        "startup_stm32f103xe.s"
+    )
+target_end()
+
 
 -- #TODO basic board info
 target(project_name)
@@ -73,11 +78,12 @@ target(project_name)
         -- 链接库文件
         "-lc",
         "-lm",
-        "-nostdlib",
+        "-lnosys",
+        -- "-nostdlib",
         -- 产生的依赖文件存放位置
         "-Wl,-Map=" .. target_dir .. "/" .. project_name .. ".map,--cref -Wl,--gc-sections",
     }
-    add_defines("USE_HAL_DRIVER", "CORE_CM3", "STM32MP157Dxx")
+    add_defines("USE_HAL_DRIVER", "CORE_CM3", "STM32F103xE")
     add_cflags(cflags, {force = true})
     add_asflags(asflags, {force = true})
     add_ldflags(ldflags, {force = true})
